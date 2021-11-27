@@ -4,7 +4,7 @@ from sympy import *
 from PyQt5 import QtWidgets
 
 
-def bisection(xl: float, xu: float, es: float, imax: int, func: float, outputWidget: QtWidgets.QPlainTextEdit):
+def bisection(xl: float, xu: float, es: float, imax: int, func: Float, outputWidget: QtWidgets.QPlainTextEdit):
     startTime = time.time()
     x = Symbol('x')
 

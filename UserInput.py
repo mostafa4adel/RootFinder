@@ -21,7 +21,7 @@ class Ui_UserInput(object):
         self.backUi = backUi
 
     def setOutputUiForBisectionAndFalse(self, outputUi):
-        self.outputUiForBisectionAndFalse = outputUi
+        self.outputUi = outputUi
 
     def setMethod(self, method: str):
         self.method = method
@@ -105,10 +105,10 @@ class Ui_UserInput(object):
             msg.setWindowTitle("Error")
             msg.exec_()
             return
-        if self.method == "Bisection" or self.method == "False-Position":
-            self.outputUiForBisectionAndFalse.setValues(self.functionInput.text(), self.lowerInput.value(), self.upperInput.value(), self.errorInput.value(), self.maxIterInput.value(),self.method)
-            self.outputUiForBisectionAndFalse.setupUi()
-            self.UserInputWindow.show()
+
+        self.outputUi.setValues(self.functionInput.text(), self.lowerInput.value(), self.upperInput.value(), self.errorInput.value(), self.maxIterInput.value(), self.method)
+        self.outputUi.setupUi()
+        self.UserInputWindow.show()
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate

@@ -7,15 +7,17 @@
 # WARNING! All changes made in this file will be lost!
 import numpy as np
 
-import ChooseFunction
 from PyQt5 import QtCore, QtGui, QtWidgets
 import BisectionMethod
+import Secant
 import falsePosition
 from sympy import *
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from scipy.optimize import brentq
+import fixedPoint
+import NewtonRaphson
 
 fig, ax = plt.subplots(figsize=(6, 6), dpi=60)
 
@@ -28,7 +30,7 @@ class Ui_Output(object):
         self.functionUi = functionUi
 
     def setValues(self, func: Mul, xl, xu, error, maxIter, method):
-        self.func = func
+        self.func = parse_expr(func)
         self.xl = xl
         self.xu = xu
         self.error = error
@@ -45,7 +47,7 @@ class Ui_Output(object):
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox.setGeometry(QtCore.QRect(25, 10, 360, 350))
         self.groupBox.setObjectName("groupBox")
-        self.graphCanvas = Canvas(self.groupBox, self.func, self.xl, self.xu)
+        self.graphCanvas = Canvas(self.groupBox, self.func, self.xl, self.xu, self.method)
 
         self.iterationsOutput = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.iterationsOutput.setGeometry(QtCore.QRect(400, 30, 200, 330))
@@ -93,39 +95,77 @@ class Ui_Output(object):
         if self.error == 0:
             self.error = 0.0001
         if self.method == "Bisection":
-            z = BisectionMethod.bisection(self.xl, self.xu, self.error, self.maxIter, parse_expr(self.func),
+            z = BisectionMethod.bisection(self.xl, self.xu, self.error, self.maxIter, self.func,
                                           self.iterationsOutput)
             self.NumberOfIterationsLabel.setText(self.NumberOfIterationsLabel.text() + ": " + str(z[1]))
             self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
             drawXr(z[0])
             trueVal = brentq(self.fun, self.xu, self.xl)
-            self.precsionLabel.setText(self.precsionLabel.text() + f": {abs(trueVal - z[0])}")
+            self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
             self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
 
         elif self.method == "False-Position":
-            z = falsePosition.falsePosition(self.xl, self.xu, self.error, self.maxIter, parse_expr(self.func),
+            z = falsePosition.falsePosition(self.xl, self.xu, self.error, self.maxIter, self.func,
                                             self.iterationsOutput)
             self.NumberOfIterationsLabel.setText(self.NumberOfIterationsLabel.text() + f":  {z[1]}")
             self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
             drawXr(z[0])
             trueVal = brentq(self.fun, self.xu, self.xl)
-            self.precsionLabel.setText(self.precsionLabel.text() + f": {abs(trueVal - z[0])}")
+            self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
+            self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
+
+        elif self.method == "Fixed Point":
+            z = fixedPoint.fixedPt(self.xl, self.xu, self.error, self.maxIter, self.func, self.iterationsOutput)
+            print(type(z[0]))
+
+            self.NumberOfIterationsLabel.setText(self.NumberOfIterationsLabel.text() + f":  {z[1]}")
+
+            if z[3] is True:
+                self.precsionLabel.setText("!!Method Diverged!!")
+                self.approximateRootLabel.setText("")
+
+            else:
+                trueVal = solve(self.func - Symbol('x'))
+                self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal[0] - z[0]) / trueVal[0]}")
+                self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
+                drawXr(z[0])
+
+            self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
+
+        elif self.method == "Newton-Raphson":
+            z = NewtonRaphson.newtonRaphson(self.xl, self.xu, self.error, self.maxIter, self.func,
+                                            self.iterationsOutput)
+
+            self.NumberOfIterationsLabel.setText(self.NumberOfIterationsLabel.text() + f":  {z[1]}")
+            self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
+            drawXr(z[0])
+
+            self.precsionLabel.setText(self.precsionLabel.text() + f": {z[3]}")
+            self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
+
+        elif self.method == "Secant":
+            z = Secant.secant(self.xl, self.xu, self.error, self.maxIter, self.func, self.iterationsOutput)
+            self.NumberOfIterationsLabel.setText(self.NumberOfIterationsLabel.text() + f":  {z[1]}")
+            self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
+            drawXr(z[0])
+
+            trueVal = brentq(self.fun, self.xu, self.xl)
+            self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
             self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
 
     def fun(self, x):
-        z = Symbol('x')
-        return parse_expr(self.func).subs(z, x)
+        return self.func.subs(Symbol('x'), x)
 
 
 class Canvas(FigureCanvas):
-    def __init__(self, parent, func, xl, xu):
+    def __init__(self, parent, func, xl, xu, method):
         global fig, ax
         super().__init__(fig)
         self.setParent(parent)
         x1 = np.linspace(xl, xu, 1000)
         x = Symbol('x')
         y = []
-        func = parse_expr(func)
+
         fig.tight_layout()
         ax.axis("off")
         ax = fig.add_subplot(1, 1, 1)
@@ -138,6 +178,14 @@ class Canvas(FigureCanvas):
             y.append(func.subs(x, i))
         with mpl.rc_context({'lines.linewidth': 2}):
             plt.plot(x1, y)
+
+        if method == "Fixed Point":
+            y1 = []
+            funx = x
+            for i in x1:
+                y1.append(funx.subs(x, i))
+            with mpl.rc_context({'lines.linewidth': 2}):
+                plt.plot(x1, y1)
 
 
 def drawXr(xr):

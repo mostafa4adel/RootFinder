@@ -41,15 +41,10 @@ class Ui_ChooseMethod(object):
         QtCore.QMetaObject.connectSlotsByName(self.ChooseMethodWindow)
 
     def chooseMethodClicked(self):
-        if self.methodComboBox.currentText() == "Bisection":
-            self.userInputUi.setMethod("Bisection")
-            self.userInputUi.setupUi()
-            self.ChooseMethodWindow.show()
-        elif self.methodComboBox.currentText() == "False-Position":
-            self.userInputUi.setMethod("False-Position")
-            self.userInputUi.setupUi()
-            self.ChooseMethodWindow.show()
+        self.userInputUi.setMethod(self.methodComboBox.currentText())
 
+        self.userInputUi.setupUi()
+        self.ChooseMethodWindow.show()
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
