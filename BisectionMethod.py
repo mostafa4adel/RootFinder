@@ -1,15 +1,19 @@
 import time
 
 from sympy import *
+from PyQt5 import QtWidgets
 
 
-def bisection(xl: float, xu: float, es: float, imax: int, func: float):
+def bisection(xl: float, xu: float, es: float, imax: int, func: float, outputWidget: QtWidgets.QPlainTextEdit):
+    startTime = time.time()
+    x = Symbol('x')
+
     if func.subs(x, xu) * func.subs(x, xl) > 0:
-        print("Can't happen")
+        outputWidget.appendPlainText("Can't happen")
         return
 
     for i in range(0, imax):
-        print(f"xl = {xl} xu = {xu}")
+        outputWidget.appendPlainText(f"xl = {float(xl):.5f} xu = {float(xu):.5f}\n")
         xr = (xu + xl) / 2
         # mid point
         if xl != 0:
@@ -28,19 +32,19 @@ def bisection(xl: float, xu: float, es: float, imax: int, func: float):
             ea = 0
         if ea < es:
             break
-
-    print(f"Root = {xr} Iterations = {i}")
-    return xr
-
-
-if __name__ == "__main__":
-    startTime = time.time()
-    x = Symbol('x')
-    y = x ** 2 - 1
-    xr = bisection(0, 3, 0.00001, 50, y)
     endTime = time.time() - startTime
-    p1 = plot(y, show=False)
-    p2 = plot_parametric((xr, x), show=False)
-    p1.append(p2[0])
-    p1.show()
-    print(type(p1))
+    z = [xr, i, endTime]
+    return z
+
+#
+# if __name__ == "__main__":
+#     startTime = time.time()
+#     x = Symbol('x')
+#     y = x*cos(x)
+#     xr = bisection(1, 2, 0.00001, 50, y)
+#     endTime = time.time() - startTime
+#     p1 = plot(y, show=False)
+#     p2 = plot_parametric((xr, x), show=False)
+#     p1.append(p2[0])
+#     p1.show()
+#     print(type(p1))

@@ -27,7 +27,7 @@ class Ui_UserInput(object):
         self.method = method
 
     def setupUi(self):
-        print(self.method)
+
         self.UserInputWindow.setObjectName("UserInput")
         self.UserInputWindow.resize(400, 250)
         self.UserInputWindow.setMinimumSize(QtCore.QSize(400, 250))
@@ -106,7 +106,7 @@ class Ui_UserInput(object):
             msg.exec_()
             return
         if self.method == "Bisection" or self.method == "False-Position":
-            self.outputUiForBisectionAndFalse.setValues(self.functionInput.text(), self.lowerInput.value(), self.upperInput.value(), self.errorInput.value(), self.maxIterInput.value())
+            self.outputUiForBisectionAndFalse.setValues(self.functionInput.text(), self.lowerInput.value(), self.upperInput.value(), self.errorInput.value(), self.maxIterInput.value(),self.method)
             self.outputUiForBisectionAndFalse.setupUi()
             self.UserInputWindow.show()
 

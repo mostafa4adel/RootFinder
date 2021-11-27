@@ -15,6 +15,7 @@ from sympy import *
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from scipy.optimize import brentq
 
 fig, ax = plt.subplots(figsize=(6, 6), dpi=60)
 
@@ -26,12 +27,13 @@ class Ui_Output(object):
     def setFunctionUi(self, functionUi):
         self.functionUi = functionUi
 
-    def setValues(self, func: Mul, xl, xu, error, maxIter):
+    def setValues(self, func: Mul, xl, xu, error, maxIter, method):
         self.func = func
         self.xl = xl
         self.xu = xu
         self.error = error
         self.maxIter = maxIter
+        self.method = method
 
     def setupUi(self):
         self.OutputWindow.setObjectName("Output")
@@ -43,11 +45,12 @@ class Ui_Output(object):
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox.setGeometry(QtCore.QRect(25, 10, 360, 350))
         self.groupBox.setObjectName("groupBox")
-        self.graphCanvas = Canvas(self.groupBox, self.func)
+        self.graphCanvas = Canvas(self.groupBox, self.func, self.xl, self.xu)
 
         self.iterationsOutput = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.iterationsOutput.setGeometry(QtCore.QRect(400, 30, 200, 330))
         self.iterationsOutput.setObjectName("iterationsOutput")
+        self.iterationsOutput.setReadOnly(True)
         self.iterationsLabel = QtWidgets.QLabel(self.centralwidget)
         self.iterationsLabel.setGeometry(QtCore.QRect(390, 10, 71, 17))
         self.iterationsLabel.setObjectName("iterationsLabel")
@@ -85,14 +88,41 @@ class Ui_Output(object):
         self.precsionLabel.setText(_translate("Output", "Precision"))
         self.newFunctioButton.setText(_translate("Output", "Enter New Funcion"))
         self.groupBox.setTitle(_translate("UserInput", "Graph"))
+        if self.maxIter == 0:
+            self.maxIter = 50
+        if self.error == 0:
+            self.error = 0.0001
+        if self.method == "Bisection":
+            z = BisectionMethod.bisection(self.xl, self.xu, self.error, self.maxIter, parse_expr(self.func),
+                                          self.iterationsOutput)
+            self.NumberOfIterationsLabel.setText(self.NumberOfIterationsLabel.text() + ": " + str(z[1]))
+            self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
+            drawXr(z[0])
+            trueVal = brentq(self.fun, self.xu, self.xl)
+            self.precsionLabel.setText(self.precsionLabel.text() + f": {abs(trueVal - z[0])}")
+            self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
+
+        elif self.method == "False-Position":
+            z = falsePosition.falsePosition(self.xl, self.xu, self.error, self.maxIter, parse_expr(self.func),
+                                            self.iterationsOutput)
+            self.NumberOfIterationsLabel.setText(self.NumberOfIterationsLabel.text() + f":  {z[1]}")
+            self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
+            drawXr(z[0])
+            trueVal = brentq(self.fun, self.xu, self.xl)
+            self.precsionLabel.setText(self.precsionLabel.text() + f": {abs(trueVal - z[0])}")
+            self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
+
+    def fun(self, x):
+        z = Symbol('x')
+        return parse_expr(self.func).subs(z, x)
 
 
 class Canvas(FigureCanvas):
-    def __init__(self, parent, func):
+    def __init__(self, parent, func, xl, xu):
         global fig, ax
         super().__init__(fig)
         self.setParent(parent)
-        x1 = np.linspace(-2, 2, 100)
+        x1 = np.linspace(xl, xu, 1000)
         x = Symbol('x')
         y = []
         func = parse_expr(func)
@@ -108,3 +138,8 @@ class Canvas(FigureCanvas):
             y.append(func.subs(x, i))
         with mpl.rc_context({'lines.linewidth': 2}):
             plt.plot(x1, y)
+
+
+def drawXr(xr):
+    plt.axvline(x=xr)
+    plt.axhline(y=0)

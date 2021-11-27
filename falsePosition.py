@@ -1,20 +1,24 @@
 import sympy as sy
 import math
 from sympy.plotting import plot
+from PyQt5 import QtWidgets
+import time
 
 
-def falsePosition(xl: float, xu: float, es: float, imax: int, func: sy.core.numbers.Float):
+def falsePosition(xl: float, xu: float, es: float, imax: int, func: sy.core.numbers.Float,
+                  outputWidget: QtWidgets.QPlainTextEdit):
+    startTime = time.time()
     xFunc = sy.Symbol('x')
-    a = [0] * imax
-    b = [0] * imax
-    ya = [0] * imax
-    yb = [0] * imax
+    a = [0] * (imax+1)
+    b = [0] * (imax+1)
+    ya = [0] * (imax+1)
+    yb = [0] * (imax+1)
     a[0] = xl
     b[0] = xu
     ya[0] = func.subs(xFunc, a[0])
     yb[0] = func.subs(xFunc, b[0])
-    x = [0] * imax
-    y = [0] * imax
+    x = [0] * (imax+1)
+    y = [0] * (imax+1)
 
     if ya[0] * yb[0] > 0.0:
         print("Func same sign at both ends")
@@ -22,12 +26,14 @@ def falsePosition(xl: float, xu: float, es: float, imax: int, func: sy.core.numb
     iter = 0
     for i in range(0, imax):
         iter += 1
+        outputWidget.appendPlainText("computing func\n")
         x[i] = b[i] - yb[i] * (b[i] - a[i]) / (yb[i] - ya[i])
 
         y[i] = func.subs(xFunc, x[i])
-        print(f"{i + 1}\t{float(a[i]):.5f}\t{float(b[i]):.5f}\t{float(x[i]):.5f}\t{float(y[i]):.5f}")
+        outputWidget.appendPlainText(
+            f"iter = {i + 1} xl = {float(a[i]):.5f} xu = {float(b[i]):.5f} xr =  {float(x[i]):.5f} f(xr) = {float(y[i]):.5f}\n")
         if y[i] == 0:
-            print("Zero Found")
+            outputWidget.appendPlainText("Zero Found\n")
             break
         elif y[i] * ya[i] < 0:
             a[i + 1] = a[i]
@@ -41,25 +47,23 @@ def falsePosition(xl: float, xu: float, es: float, imax: int, func: sy.core.numb
             yb[i + 1] = yb[i]
 
         if i > 1 and abs(x[i] - x[i - 1]) < es:
-            print("False position has converged")
+            outputWidget.appendPlainText("False position has converged\n")
             break
 
     if iter >= imax:
-        print("Zero not found")
+        outputWidget.appendPlainText("Zero not found\n")
+    endTime = time.time() - startTime
 
-    n = len(x)
-    print("step\txl\txu\txr\tf(xr)")
-    for i in range(0, iter):
-        print(f"{i + 1}\t{float(a[i]):.5f}\t{float(b[i]):.5f}\t{float(x[i]):.5f}\t{float(y[i]):.5f}")
-        if a[i + 1] == 0 and b[i + 1] == 0 and x[i + 1] == 0 and y[i + 1] == 0:
-            break
-    return x[iter - 1]
+    z = [x[iter - 1], iter, endTime]
+    return z
 
-
-if __name__ == "__main__":
-    x = sy.Symbol('x')
-    y = x ** 3 - x ** 2 + 2
-    xr = falsePosition(-200, 300, 0.00001, 50, y)
-    print(f"xr = {float(xr):.5f}")
-    p1 = plot(y, show=False)
-    p1.show()
+# if __name__ == "__main__":
+#     x = sy.Symbol('x')
+#     y = x*sy.cos(x)
+#
+#     xr = falsePosition(1, 2, 0.00001, 50, y)
+#
+#     if xr is not None:
+#         print(f"xr = {float(xr):.5f}")
+#     p1 = plot(y, show=False)
+#     p1.show()
