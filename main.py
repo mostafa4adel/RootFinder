@@ -3,7 +3,8 @@ import ChooseFunction
 import UserInput
 import Output
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+
+from PyQt5 import QtWidgets
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

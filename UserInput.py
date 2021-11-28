@@ -67,7 +67,7 @@ class Ui_UserInput(object):
         self.errorInput = QtWidgets.QDoubleSpinBox(self.centralwidget)
         self.errorInput.setGeometry(QtCore.QRect(100, 120, 91, 25))
         self.errorInput.setDecimals(6)
-        self.errorInput.setMinimum(-100000000.0)
+        self.errorInput.setMinimum(-1.0)
         self.errorInput.setMaximum(100000000.0)
         self.errorInput.setObjectName("doubleSpinBox_3")
         self.maxIterInput = QtWidgets.QSpinBox(self.centralwidget)

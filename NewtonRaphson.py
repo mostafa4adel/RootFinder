@@ -2,6 +2,7 @@ from sympy import *
 from PyQt5 import QtWidgets
 import time
 
+
 def newtonRaphson(xl: float, xu: float, es: float, maxIter: int, func: Float, outputWidget: QtWidgets.QPlainTextEdit):
     startTime = time.time()
     xGuess = (xl + xu) / 2
@@ -16,7 +17,7 @@ def newtonRaphson(xl: float, xu: float, es: float, maxIter: int, func: Float, ou
     dfx[0] = float(dfunc.subs(x, xr[0]))
 
     iter = 0
-    for i in range(1, maxIter):
+    for i in range(1, maxIter + 1):
         # print(float(dfx[i - 1]))
         # print(i)
         xr[i] = xr[i - 1] - fx[i - 1] / dfx[i - 1]
@@ -27,11 +28,10 @@ def newtonRaphson(xl: float, xu: float, es: float, maxIter: int, func: Float, ou
             outputWidget.appendPlainText("Converged Successfully")
             break
         iter = i
-    er = abs(float(xr[iter-1]) - float(xr[iter - 2]))/float(xr[iter-1]) *100
+    er = abs(float(xr[iter]) - float(xr[iter - 1])) / float(xr[iter]) * 100
     endTime = time.time() - startTime
-    z = [xr[iter-1], iter, endTime , er]
-    if iter >= maxIter:
-        outputWidget.setPlainText("Zero Not Found")
+    z = [xr[iter], iter, endTime, er]
+
     # print(iter)
     return z
 
