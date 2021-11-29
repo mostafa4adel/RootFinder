@@ -94,7 +94,7 @@ class Ui_Output(object):
             self.maxIter = 50
         if self.error == 0:
             self.error = 0.0001
-            
+
         if self.method == "Bisection":
             z = BisectionMethod.bisection(self.xl, self.xu, self.error, self.maxIter, self.func,
                                           self.iterationsOutput)
@@ -126,7 +126,7 @@ class Ui_Output(object):
                 self.approximateRootLabel.setText("")
 
             else:
-                trueVal = solve(self.func - Symbol('x'))
+                trueVal = brentq(self.fun, self.xu, self.xl)
                 self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal[0] - z[0]) / trueVal[0]}")
                 self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
                 drawXr(z[0])
@@ -140,8 +140,8 @@ class Ui_Output(object):
             self.NumberOfIterationsLabel.setText(self.NumberOfIterationsLabel.text() + f":  {z[1]}")
             self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
             drawXr(z[0])
-
-            self.precsionLabel.setText(self.precsionLabel.text() + f": {z[3]}")
+            trueVal = brentq(self.fun, self.xu, self.xl)
+            self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
             self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
 
         elif self.method == "Secant":

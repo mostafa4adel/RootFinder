@@ -28,9 +28,9 @@ def newtonRaphson(xl: float, xu: float, es: float, maxIter: int, func: Float, ou
             outputWidget.appendPlainText("Converged Successfully")
             break
         iter = i
-    er = abs(float(xr[iter]) - float(xr[iter - 1])) / float(xr[iter]) * 100
+    # er = abs(float(xr[iter]) - float(xr[iter - 1])) / float(xr[iter]) * 100
     endTime = time.time() - startTime
-    z = [xr[iter], iter, endTime, er]
+    z = [xr[iter], iter, endTime]
 
     # print(iter)
     return z
