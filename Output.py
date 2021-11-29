@@ -94,6 +94,7 @@ class Ui_Output(object):
             self.maxIter = 50
         if self.error == 0:
             self.error = 0.0001
+            
         if self.method == "Bisection":
             z = BisectionMethod.bisection(self.xl, self.xu, self.error, self.maxIter, self.func,
                                           self.iterationsOutput)
@@ -149,8 +150,8 @@ class Ui_Output(object):
             self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
             drawXr(z[0])
 
-            # trueVal = brentq(self.fun, self.xu, self.xl)
-            # self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
+            trueVal = brentq(self.fun, self.xu, self.xl)
+            self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
             self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
 
     def fun(self, x):
