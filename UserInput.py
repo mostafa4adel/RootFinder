@@ -27,7 +27,6 @@ class Ui_UserInput(object):
         self.method = method
 
     def setupUi(self):
-
         self.UserInputWindow.setObjectName("UserInput")
         self.UserInputWindow.resize(400, 250)
         self.UserInputWindow.setMinimumSize(QtCore.QSize(400, 250))
@@ -95,7 +94,7 @@ class Ui_UserInput(object):
     def evaluateButtonClicked(self):
         unacceptable = False
         unacceptable = self.lowerInput.value() >= self.upperInput.value() or not validateFunction(
-            self.functionInput.text())
+            self.functionInput.text(), self.lowerInput.value(), self.upperInput.value())
 
         if unacceptable:
             msg = QMessageBox()
@@ -106,7 +105,8 @@ class Ui_UserInput(object):
             msg.exec_()
             return
 
-        self.outputUi.setValues(self.functionInput.text(), self.lowerInput.value(), self.upperInput.value(), self.errorInput.value(), self.maxIterInput.value(), self.method)
+        self.outputUi.setValues(self.functionInput.text(), self.lowerInput.value(), self.upperInput.value(),
+                                self.errorInput.value(), self.maxIterInput.value(), self.method)
         self.outputUi.setupUi()
         self.UserInputWindow.show()
 
@@ -123,13 +123,16 @@ class Ui_UserInput(object):
         self.getFromFileButton.setText(_translate("UserInput", "Get From File"))
 
 
-def validateFunction(func: str):
+def validateFunction(func: str, x0, x1):
     try:
         function = parse_expr(func)
-        print(type(function))
+
         if len(function.atoms(Symbol)) > 1 or len(function.atoms(Symbol)) == 0:
             return False
         if 'x' not in str(function):
+            return False
+        if function.subs(Symbol('x'), x0) * function.subs(Symbol('x'), x1) > 0:
+            print("Bad input")
             return False
         return True
     except:

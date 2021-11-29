@@ -9,7 +9,6 @@ def secant(x0, x1, es, maxIter, func: Float, outputWidget: QtWidgets.QPlainTextE
     step = 1
     condition = True
     x2 = 0
-    print(func)
     while condition:
         if func.subs(x, x0) == func.subs(x, x1):
             outputWidget.appendPlainText('Divide by zero error!')

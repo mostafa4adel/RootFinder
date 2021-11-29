@@ -149,8 +149,8 @@ class Ui_Output(object):
             self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
             drawXr(z[0])
 
-            trueVal = brentq(self.fun, self.xu, self.xl)
-            self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
+            # trueVal = brentq(self.fun, self.xu, self.xl)
+            # self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
             self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
 
     def fun(self, x):
