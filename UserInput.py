@@ -5,10 +5,11 @@
 # Created by: PyQt5 UI code generator 5.14.1
 #
 # WARNING! All changes made in this file will be lost!
+import os
 
 from sympy import *
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QMessageBox, QFileDialog
 import Output
 import ChooseFunction
 
@@ -86,6 +87,7 @@ class Ui_UserInput(object):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.UserInputWindow)
         self.evaluateButton.clicked.connect(self.evaluateButtonClicked)
+        self.getFromFileButton.clicked.connect(self.fileDialog)
 
     def backButtonClicked(self):
         self.backUi.setupUi()
@@ -121,6 +123,41 @@ class Ui_UserInput(object):
         self.evaluateButton.setText(_translate("UserInput", "Evaluate"))
         self.backButton.setText(_translate("UserInput", "Back"))
         self.getFromFileButton.setText(_translate("UserInput", "Get From File"))
+
+    def fileDialog(self):
+        fileName = self.getFileName()
+        i = 0
+        try:
+            with open(fileName) as f:
+                lines = f.readlines()
+
+                for line in lines:
+                    i = i + 1
+                    line = line.replace('\n', '')
+                if i != 0:
+                    self.functionInput.setText(lines[0])
+                if i > 0:
+                    self.lowerInput.setValue(float(lines[1].split(' ')[0]))
+                    self.upperInput.setValue(float(lines[1].split(' ')[1]))
+                if i > 1:
+                    self.errorInput.setValue(float(lines[2].split(' ')[0]))
+                    self.maxIterInput.setValue(int(lines[2].split(' ')[1]))
+        except:
+            pass
+
+
+
+    def getFileName(self):
+        file_filter = 'Data File (*.txt)'
+        response = QFileDialog().getOpenFileName(
+            parent=self.centralwidget,
+            caption='Select Data  File',
+            directory=os.getcwd(),
+            filter=file_filter,
+            initialFilter='Data File (*.txt)'
+        )
+
+        return response[0]
 
 
 def validateFunction(func: str, x0, x1):
