@@ -87,7 +87,7 @@ class Ui_Output(object):
         self.NumberOfIterationsLabel.setText(_translate("Output", "Number of Iterations"))
         self.executionTimeLabel.setText(_translate("Output", "Execution Time"))
         self.approximateRootLabel.setText(_translate("Output", "Approximate root"))
-        self.precsionLabel.setText(_translate("Output", "Precision"))
+        self.precsionLabel.setText(_translate("Output", "Relative True Error"))
         self.newFunctioButton.setText(_translate("Output", "Enter New Funcion"))
         self.groupBox.setTitle(_translate("UserInput", "Graph"))
         if self.maxIter == 0:
@@ -102,7 +102,8 @@ class Ui_Output(object):
             self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
             drawXr(z[0])
             trueVal = brentq(self.fun, self.xu, self.xl)
-            self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
+
+            self.precsionLabel.setText(self.precsionLabel.text() + f": {  (100 * abs(trueVal - z[0]) / trueVal) }\nRelative Absolute Error : {z[3]}")
             self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
 
         elif self.method == "False-Position":
@@ -112,7 +113,10 @@ class Ui_Output(object):
             self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
             drawXr(z[0])
             trueVal = brentq(self.fun, self.xu, self.xl)
-            self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
+
+            self.precsionLabel.setText(
+                self.precsionLabel.text() + f": {(100 * abs(trueVal - z[0]) / trueVal)}\nRelative Absolute Error : {z[3]}")
+
             self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
 
         elif self.method == "Fixed Point":
@@ -126,11 +130,9 @@ class Ui_Output(object):
                 self.approximateRootLabel.setText("")
 
             else:
-                trueVal = brentq(self.fun, self.xu, self.xl)
-                self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal[0] - z[0]) / trueVal[0]}")
                 self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
+                self.precsionLabel.setText(f"Relative Absolute Error : {z[4]}")
                 drawXr(z[0])
-
             self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
 
         elif self.method == "Newton-Raphson":
@@ -141,7 +143,9 @@ class Ui_Output(object):
             self.approximateRootLabel.setText(self.approximateRootLabel.text() + f":\t{float(z[0]):.5f}")
             drawXr(z[0])
             trueVal = brentq(self.fun, self.xu, self.xl)
-            self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
+            self.precsionLabel.setText(
+                self.precsionLabel.text() + f": {(100 * abs(trueVal - z[0]) / trueVal)}\nRelative Absolute Error : {z[3]}")
+
             self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
 
         elif self.method == "Secant":
@@ -151,7 +155,8 @@ class Ui_Output(object):
             drawXr(z[0])
 
             trueVal = brentq(self.fun, self.xu, self.xl)
-            self.precsionLabel.setText(self.precsionLabel.text() + f": {100 * abs(trueVal - z[0]) / trueVal}")
+            self.precsionLabel.setText(
+                self.precsionLabel.text() + f": {(100 * abs(trueVal - z[0]) / trueVal)}\nRelative Absolute Error : {z[2]}")
             self.executionTimeLabel.setText(self.executionTimeLabel.text() + f": {z[2]:.5f}")
 
     def fun(self, x):

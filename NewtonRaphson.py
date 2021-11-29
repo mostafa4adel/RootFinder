@@ -24,13 +24,14 @@ def newtonRaphson(xl: float, xu: float, es: float, maxIter: int, func: Float, ou
         fx[i] = float(func.subs(x, xr[i]))
         dfx[i] = float(dfunc.subs(x, xr[i]))
         outputWidget.appendPlainText(f"i:{i} x:{xr[i]:.20f} f(x):{fx[i]:.5f} f(x)':{dfx[i]:.5f}")
-        if abs(float(xr[i]) - float(xr[i - 1])) < es:
+        ea = abs(float(xr[i]) - float(xr[i - 1])/float(xr[i])) * 100
+        if ea < es:
             outputWidget.appendPlainText("Converged Successfully")
             break
         iter = i
     # er = abs(float(xr[iter]) - float(xr[iter - 1])) / float(xr[iter]) * 100
     endTime = time.time() - startTime
-    z = [xr[iter], iter, endTime]
+    z = [xr[iter], iter, endTime,ea]
 
     # print(iter)
     return z

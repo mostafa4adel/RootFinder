@@ -96,7 +96,7 @@ class Ui_UserInput(object):
     def evaluateButtonClicked(self):
         unacceptable = False
         unacceptable = self.lowerInput.value() >= self.upperInput.value() or not validateFunction(
-            self.functionInput.text(), self.lowerInput.value(), self.upperInput.value())
+            self.functionInput.text(), self.lowerInput.value(), self.upperInput.value(),self.method)
 
         if unacceptable:
             msg = QMessageBox()
@@ -145,8 +145,6 @@ class Ui_UserInput(object):
         except:
             pass
 
-
-
     def getFileName(self):
         file_filter = 'Data File (*.txt)'
         response = QFileDialog().getOpenFileName(
@@ -160,7 +158,7 @@ class Ui_UserInput(object):
         return response[0]
 
 
-def validateFunction(func: str, x0, x1):
+def validateFunction(func: str, x0, x1, method):
     try:
         function = parse_expr(func)
 
@@ -168,7 +166,7 @@ def validateFunction(func: str, x0, x1):
             return False
         if 'x' not in str(function):
             return False
-        if function.subs(Symbol('x'), x0) * function.subs(Symbol('x'), x1) > 0:
+        if function.subs(Symbol('x'), x0) * function.subs(Symbol('x'), x1) > 0 and method != "Fixed Point":
             print("Bad input")
             return False
         return True

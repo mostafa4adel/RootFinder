@@ -9,16 +9,16 @@ def falsePosition(xl: float, xu: float, es: float, imax: int, func: sy.core.numb
                   outputWidget: QtWidgets.QPlainTextEdit):
     startTime = time.time()
     xFunc = sy.Symbol('x')
-    a = [0] * (imax+1)
-    b = [0] * (imax+1)
-    ya = [0] * (imax+1)
-    yb = [0] * (imax+1)
+    a = [0] * (imax + 1)
+    b = [0] * (imax + 1)
+    ya = [0] * (imax + 1)
+    yb = [0] * (imax + 1)
     a[0] = xl
     b[0] = xu
     ya[0] = func.subs(xFunc, a[0])
     yb[0] = func.subs(xFunc, b[0])
-    x = [0] * (imax+1)
-    y = [0] * (imax+1)
+    x = [0] * (imax + 1)
+    y = [0] * (imax + 1)
 
     if ya[0] * yb[0] > 0.0:
         print("Func same sign at both ends")
@@ -26,7 +26,6 @@ def falsePosition(xl: float, xu: float, es: float, imax: int, func: sy.core.numb
     iter = 0
     for i in range(0, imax):
         iter += 1
-        outputWidget.appendPlainText("computing func\n")
         x[i] = b[i] - yb[i] * (b[i] - a[i]) / (yb[i] - ya[i])
 
         y[i] = func.subs(xFunc, x[i])
@@ -45,16 +44,16 @@ def falsePosition(xl: float, xu: float, es: float, imax: int, func: sy.core.numb
             ya[i + 1] = y[i]
             b[i + 1] = b[i]
             yb[i + 1] = yb[i]
-
-        if i > 1 and abs(x[i] - x[i - 1]) < es:
+        ea = abs(x[i] - x[i - 1] / x[i]) * 100
+        if i > 1 and ea < es:
             outputWidget.appendPlainText("False position has converged\n")
             break
 
     if iter >= imax:
         outputWidget.appendPlainText("Zero not found\n")
-    endTime = time.time() - startTime
 
-    z = [x[iter - 1], iter, endTime]
+    endTime = time.time() - startTime
+    z = [x[iter - 1], iter, endTime, ea]
     return z
 
 # if __name__ == "__main__":

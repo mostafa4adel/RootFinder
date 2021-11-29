@@ -14,18 +14,17 @@ def fixedPt(xl: float, xu: float, es: float, iter_max: int, func: Float, outputW
         tempX = xr
         xr = func.subs(x, tempX)
 
-
-        outputWidget.appendPlainText(f"step : {iter+1}, x: {xr}\n")
+        outputWidget.appendPlainText(f"step : {iter + 1}, x: {float(xr):.10f}\n")
         if xr != 0:
             ea = abs((xr - tempX) / xr) * 100
         iter = iter + 1
 
         if ea < es or iter > iter_max:
-            outputWidget.appendPlainText("done")
+            outputWidget.appendPlainText("Method Converged")
             break
     endTime = time.time() - startTime
 
-    z = [xr, iter, endTime, False]
+    z = [xr, iter, endTime, False, ea]
 
     if iter > iter_max:
         z[3] = True

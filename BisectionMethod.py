@@ -17,9 +17,10 @@ def bisection(xl: float, xu: float, es: float, imax: int, func: Float, outputWid
         xr = (xu + xl) / 2
         # mid point
         if xl != 0:
-            ea = abs((xu - xl) / xl)
+            ea = abs((xu - xl)/xu)*100
         else:
-            ea = 10000
+            ea = 1
+
         # relative error
         test = (func.subs(x, xl) * func.subs(x, xr))
 
@@ -32,8 +33,9 @@ def bisection(xl: float, xu: float, es: float, imax: int, func: Float, outputWid
             ea = 0
         if ea < es:
             break
+
     endTime = time.time() - startTime
-    z = [xr, i, endTime]
+    z = [xr, i, endTime, ea]
     return z
 
 #

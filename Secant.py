@@ -6,7 +6,7 @@ import time
 def secant(x0, x1, es, maxIter, func: Float, outputWidget: QtWidgets.QPlainTextEdit):
     startTime = time.time()
     x = Symbol('x')
-    step = 1
+    step = 0
     condition = True
     x2 = 0
     while condition:
